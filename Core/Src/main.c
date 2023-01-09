@@ -103,6 +103,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+      // Inspired by: https://github.com/PascalBod/stm32-swv
       new_ticks = HAL_GetTick() / PERIOD;
       if (new_ticks > prev_ticks) {
           prev_ticks = new_ticks;
