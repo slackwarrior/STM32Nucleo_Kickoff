@@ -55,12 +55,20 @@ static char buff_to_debug[15];
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+int print_via_SWO_SWD(char *);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int print_via_SWO_SWD(char *text){
+    int count = 0;
+   
+    while(*text){
+        ITM_SendChar(*text++);
+        count++;
+    }
+   return count; 
+}
 /* USER CODE END 0 */
 
 /**
@@ -107,22 +115,7 @@ int main(void)
       new_ticks = HAL_GetTick() / PERIOD;
       if (new_ticks > prev_ticks) {
           prev_ticks = new_ticks;
-          ITM_SendChar('V');
-          ITM_SendChar('a');
-          ITM_SendChar('l');
-          ITM_SendChar(':');
-       
-           
-          // snprintf(buff_to_debug, "%d", prev_ticks); 
-          // ITM_SendChar(buff_to_debug[0]);
-          // ITM_SendChar(buff_to_debug[1]);
-          // ITM_SendChar(buff_to_debug[2]);
-          // ITM_SendChar(buff_to_debug[3]);
-          // ITM_SendChar(buff_to_debug[4]);
-          // ITM_SendChar(buff_to_debug[5]);
-          // ITM_SendChar(buff_to_debug[6]);
-          ITM_SendChar('\r');
-
+          print_via_SWO_SWD("Test\n");
       }
     /* USER CODE END WHILE */
 
