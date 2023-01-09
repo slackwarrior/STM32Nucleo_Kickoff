@@ -55,12 +55,46 @@ static char buff_to_debug[15];
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-int print_via_SWO_SWD(char *);
+void print_hex_SWO_SWD(int, char *);
+int print_long_val_SWO_SWD(long value, char* converted);
+int print_text_SWO_SWD(char *);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-int print_via_SWO_SWD(char *text){
+void print_hex_SWO_SWD(int count, char *bufptr){
+    int iter;
+    char value, hi_nibble, lo_nibble;
+
+    for (iter = 0; iter < count; iter++){
+        value = *(bufptr+iter);
+       
+        hi_nibble = (value &0xf0)>>4;
+        lo_nibble = value &0x0f;
+        
+        ITM_SendChar('0');
+        ITM_SendChar('x');
+        (hi_nibble>9)?ITM_SendChar((hi_nibble - 10)+'A'):ITM_SendChar(hi_nibble + '0');
+        (lo_nibble>9)?ITM_SendChar((lo_nibble - 10)+'A'):ITM_SendChar(lo_nibble + '0');
+        ITM_SendChar(' ');
+    } 
+}
+
+int print_long_val_SWO_SWD(long value, char* converted){
+    long tmp_val;
+    int counter = 0;
+    char buf[21];
+
+    buf[21] = '\0';
+    tmp_val = value;
+    while (tmp_val > 0){
+        buf[20-counter] = (tmp_val%10)+'0';
+        tmp_val = tmp_val/10;
+        ++counter;
+    }
+}
+
+int print_text_SWO_SWD(char *text){
     int count = 0;
    
     while(*text){
@@ -115,7 +149,10 @@ int main(void)
       new_ticks = HAL_GetTick() / PERIOD;
       if (new_ticks > prev_ticks) {
           prev_ticks = new_ticks;
-          print_via_SWO_SWD("Test\n");
+          // print_text_SWO_SWD("Test\n");
+          // print_hex_SWO_SWD(8, "ABCDEFGH");
+          print_long_val_SWO_SWD(213742069);
+          print_text_SWO_SWD("\n");
       }
     /* USER CODE END WHILE */
 
