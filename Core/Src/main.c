@@ -45,7 +45,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+static const uint32_t PERIOD = 1000;
+static uint32_t prev_ticks = 0;
+static uint32_t new_ticks;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -99,6 +101,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+      new_ticks = HAL_GetTick() / PERIOD;
+      if (new_ticks > prev_ticks) {
+          prev_ticks = new_ticks;
+      }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
