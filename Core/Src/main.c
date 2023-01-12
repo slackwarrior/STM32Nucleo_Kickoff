@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,7 +49,7 @@ static const uint32_t PERIOD = 1000;
 static uint32_t prev_ticks = 0;
 static uint32_t new_ticks;
 
-static char buff_to_debug[15];
+static char buff_to_debug[25];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -85,13 +85,7 @@ int print_long_val_SWO_SWD(long value, char* converted){
     int counter = 0;
     char buf[21];
 
-    buf[21] = '\0';
-    tmp_val = value;
-    while (tmp_val > 0){
-        buf[20-counter] = (tmp_val%10)+'0';
-        tmp_val = tmp_val/10;
-        ++counter;
-    }
+    return snprintf(converted, 21, "%d", value);
 }
 
 int print_text_SWO_SWD(char *text){
@@ -151,7 +145,8 @@ int main(void)
           prev_ticks = new_ticks;
           // print_text_SWO_SWD("Test\n");
           // print_hex_SWO_SWD(8, "ABCDEFGH");
-          print_long_val_SWO_SWD(213742069);
+          print_long_val_SWO_SWD(213742069,buff_to_debug);
+          print_text_SWO_SWD(buff_to_debug);
           print_text_SWO_SWD("\n");
       }
     /* USER CODE END WHILE */
