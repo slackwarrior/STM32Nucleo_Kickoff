@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,18 +45,58 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+static const uint32_t PERIOD = 300;
+static uint32_t prev_ticks = 0;
+static uint32_t new_ticks;
 
+static char buff_to_debug[256];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void print_hex_SWO_SWD(int, char *);
+int print_long_val_SWO_SWD(long value, char* converted);
+int print_text_SWO_SWD(char *);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void print_hex_SWO_SWD(int count, char *bufptr){
+    int iter;
+    char value, hi_nibble, lo_nibble;
 
+    for (iter = 0; iter < count; iter++){
+        value = *(bufptr+iter);
+       
+        hi_nibble = (value &0xf0)>>4;
+        lo_nibble = value &0x0f;
+        
+        ITM_SendChar('0');
+        ITM_SendChar('x');
+        (hi_nibble>9)?ITM_SendChar((hi_nibble - 10)+'A'):ITM_SendChar(hi_nibble + '0');
+        (lo_nibble>9)?ITM_SendChar((lo_nibble - 10)+'A'):ITM_SendChar(lo_nibble + '0');
+        ITM_SendChar(' ');
+    } 
+}
+
+int print_long_val_SWO_SWD(long value, char* converted){
+    long tmp_val;
+    int counter = 0;
+    char buf[21];
+
+    return snprintf(converted, 21, "%d", value);
+}
+
+int print_text_SWO_SWD(char *text){
+    int count = 0;
+   
+    while(*text){
+        ITM_SendChar(*text++);
+        count++;
+    }
+   return count; 
+}
 /* USER CODE END 0 */
 
 /**
@@ -99,6 +139,22 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+      // Inspired by: https://github.com/PascalBod/stm32-swv
+      new_ticks = HAL_GetTick() / PERIOD;
+      if (new_ticks > prev_ticks) {
+          prev_ticks = new_ticks;
+          // print_text_SWO_SWD("Test\n");
+          // print_hex_SWO_SWD(8, "ABCDEFGH");
+          // print_long_val_SWO_SWD(213742069,buff_to_debug);
+          snprintf(buff_to_debug, 256, "#GRN# na zielono\n");
+          print_text_SWO_SWD(buff_to_debug);
+          snprintf(buff_to_debug, 256, "#RED# na czerwono\n");
+          print_text_SWO_SWD(buff_to_debug);
+          snprintf(buff_to_debug, 256, "#ORG# na pomarańczowo\n");
+          print_text_SWO_SWD(buff_to_debug);
+
+          // print_text_SWO_SWD("\n");
+      }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
