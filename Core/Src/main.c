@@ -35,6 +35,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define PREV_STATE_ON   1
+#define PREV_STATE_OFF  0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -50,6 +52,8 @@ static uint32_t prev_ticks = 0;
 static uint32_t new_ticks;
 
 static char buff_to_debug[256];
+
+int prev_state;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -81,11 +85,7 @@ void print_hex_SWO_SWD(int count, char *bufptr){
 }
 
 int print_long_val_SWO_SWD(long value, char* converted){
-    long tmp_val;
-    int counter = 0;
-    char buf[21];
-
-    return snprintf(converted, 21, "%d", value);
+    return snprintf(converted, 21, "%ld", value);
 }
 
 int print_text_SWO_SWD(char *text){
@@ -132,7 +132,7 @@ int main(void)
   MX_SPI2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  prev_state = PREV_STATE_OFF;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -146,23 +146,44 @@ int main(void)
           // print_text_SWO_SWD("Test\n");
           // print_hex_SWO_SWD(8, "ABCDEFGH");
           // print_long_val_SWO_SWD(213742069,buff_to_debug);
-          snprintf(buff_to_debug, 256, "#GRN# na zielono\n");
-          print_text_SWO_SWD(buff_to_debug);
-          snprintf(buff_to_debug, 256, "#RED# na czerwono\n");
-          print_text_SWO_SWD(buff_to_debug);
-          snprintf(buff_to_debug, 256, "#ORG# na pomarańczowo\n");
-          print_text_SWO_SWD(buff_to_debug);
+          // snprintf(buff_to_debug, 256, "#GRN# na zielono\n");
+          // print_text_SWO_SWD(buff_to_debug);
+          // snprintf(buff_to_debug, 256, "#RED# na czerwono\n");
+          // print_text_SWO_SWD(buff_to_debug);
+          // snprintf(buff_to_debug, 256, "#ORG# na pomarańczowo\n");
+          // print_text_SWO_SWD(buff_to_debug);
 
           // print_text_SWO_SWD("\n");
       }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+      // prev_state
+      // #define PREV_STATE_ON
+      // #define PREV_STATE_OFF
+
       if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin)==GPIO_PIN_RESET){
           HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+          if (PREV_STATE_OFF==prev_state){
+              print_long_val_SWO_SWD(new_ticks, buff_to_debug);
+              print_text_SWO_SWD(buff_to_debug);
+
+              snprintf(buff_to_debug, 256, "#RED#: załączona\n");
+              print_text_SWO_SWD(buff_to_debug);
+              prev_state = PREV_STATE_ON;
+          }
       }
       else {
           HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+          if (PREV_STATE_ON == prev_state){
+              print_long_val_SWO_SWD(new_ticks, buff_to_debug);
+              print_text_SWO_SWD(buff_to_debug);
+
+              snprintf(buff_to_debug, 256, "#GRN#: wyłączona\n");
+              print_text_SWO_SWD(buff_to_debug);
+              prev_state = PREV_STATE_OFF;
+
+          }
 
       }
   }
