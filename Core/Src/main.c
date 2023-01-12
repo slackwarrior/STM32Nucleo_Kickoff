@@ -45,11 +45,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-static const uint32_t PERIOD = 1000;
+static const uint32_t PERIOD = 300;
 static uint32_t prev_ticks = 0;
 static uint32_t new_ticks;
 
-static char buff_to_debug[25];
+static char buff_to_debug[256];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -145,9 +145,15 @@ int main(void)
           prev_ticks = new_ticks;
           // print_text_SWO_SWD("Test\n");
           // print_hex_SWO_SWD(8, "ABCDEFGH");
-          print_long_val_SWO_SWD(213742069,buff_to_debug);
+          // print_long_val_SWO_SWD(213742069,buff_to_debug);
+          snprintf(buff_to_debug, 256, "#GRN# na zielono\n");
           print_text_SWO_SWD(buff_to_debug);
-          print_text_SWO_SWD("\n");
+          snprintf(buff_to_debug, 256, "#RED# na czerwono\n");
+          print_text_SWO_SWD(buff_to_debug);
+          snprintf(buff_to_debug, 256, "#ORG# na pomarańczowo\n");
+          print_text_SWO_SWD(buff_to_debug);
+
+          // print_text_SWO_SWD("\n");
       }
     /* USER CODE END WHILE */
 
